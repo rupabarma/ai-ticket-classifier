@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<header class="page-head">
+  <h1>Dashboard</h1>
+  <p>Where tickets in the training data come from, how well the model sorts them, and what has been classified since the server started.</p>
+</header>
+
+<section class="grid stats" aria-label="Key numbers">
+  <div class="card stat">
+    <div class="label">Tickets in dataset</div>
+    <div class="value">{{ "{:,}".format(total_tickets) }}</div>
+    <div class="note">data/tickets.csv</div>
+  </div>
+  <div class="card stat">
+    <div class="label">Departments</div>
+    <div class="value">{{ department_count }}</div>
+    <div class="note">Billing, Technical, HR, General</div>
+  </div>
+  <div class="card stat">
+    <div class="label">Model accuracy</div>
+    <div class="value">{{ accuracy_pct }}%</div>
+    <div class="note">On held-out test tickets</div>
+  </div>
+  <div class="card stat">
+    <div class="label">Classified this session</div>
+    <div class="value">{{ session.total }}</div>
+    <div class="note">{{ session.auto }} automatic, {{ session.review }} for review, {{ session.urgent }} urgent</div>
+  </div>
+</section>
+
+<div class="grid two">
+  <section class="card" aria-labelledby="dist-title">
+    <div class="card-head">
+      <h2 id="dist-title">Tickets by department</h2>
+      <span class="hint">Share of {{ "{:,}".format(total_tickets) }} tickets</span>
+    </div>
+    {% for d in distribution %}
+    <div class="bar-row dept-{{ d.department|lower }}">
+      <span class="name"><span class="dot"></span>{{ d.department }}</span>
+      <div class="bar" role="img" aria-label="{{ d.department }}: {{ d.count }} tickets"><span style="width: {{ d.bar }}%"></span></div>
+      <span class="figure">{{ d.count }} ({{ d.share }}%)</span>
+    </div>
+    {% endfor %}
+  </section>
+
+  <section class="card" aria-labelledby="rule-title">
+    <div class="card-head"><h2 id="rule-title">Routing rule</h2></div>
+    <p>A ticket goes straight to its predicted department only when the model is at least <strong>{{ threshold_pct }}%</strong> confident. Anything lower is marked <strong>Needs Human Review</strong> so a person decides.</p>
+    <p style="color: var(--ink-soft); margin-bottom: 18px;">Priority is checked separately by keyword rules and does not change the department.</p>
+    <a class="btn" href="/classify">Classify a ticket</a>
+  </section>
+</div>
+
+<section class="card" aria-labelledby="recent-title">
+  <div class="card-head">
+    <h2 id="recent-title">Recent classifications</h2>
+    <span class="hint">Resets when the server restarts</span>
+  </div>
+  {% if recent %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Time</th><th>Subject</th><th>Result</th><th class="num">Confidence</th><th>Priority</th></tr></thead>
+      <tbody>
+      {% for r in recent %}
+        {% set dc = 'dept-review' if r.needs_review else 'dept-' ~ (r.department|lower) %}
+        <tr>
+          <td>{{ r.time }}</td>
+          <td class="wrap">{{ r.subject }}</td>
+          <td class="{{ dc }}"><span class="dot"></span>{{ r.department }}</td>
+          <td class="num">{{ r.confidence_pct }}%</td>
+          <td><span class="badge {{ 'urgent' if r.priority == 'Urgent' else 'normal' }}">{{ r.priority }}</span></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty">
+    <p>No tickets classified yet in this session.</p>
+    <a class="btn ghost" href="/classify">Classify your first ticket</a>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

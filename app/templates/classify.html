@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Classify ticket{% endblock %}
+{% block content %}
+<header class="page-head">
+  <h1>Classify a ticket</h1>
+  <p>Paste a customer message. TicketFlow predicts the department, shows how sure it is, and flags urgent wording.</p>
+</header>
+
+<section class="card" aria-labelledby="form-title">
+  <div class="card-head"><h2 id="form-title">New ticket</h2></div>
+  {% if errors.general %}<div class="alert error" role="alert">{{ errors.general }}</div>{% endif %}
+  <form method="post" action="/classify" novalidate>
+    <div class="field {% if errors.subject %}invalid{% endif %}">
+      <label for="subject">Subject</label>
+      <input type="text" id="subject" name="subject" value="{{ subject }}" maxlength="{{ max_subject }}" placeholder="For example: Charged twice for my subscription" {% if errors.subject %}aria-invalid="true" aria-describedby="subject-error"{% endif %}>
+      {% if errors.subject %}<div class="error-text" id="subject-error">{{ errors.subject }}</div>{% endif %}
+    </div>
+    <div class="field {% if errors.body %}invalid{% endif %}">
+      <label for="body">Description</label>
+      <textarea id="body" name="body" maxlength="{{ max_body }}" placeholder="Describe what happened, what you expected, and anything you already tried." {% if errors.body %}aria-invalid="true" aria-describedby="body-error"{% endif %}>{{ body }}</textarea>
+      {% if errors.body %}<div class="error-text" id="body-error">{{ errors.body }}</div>{% endif %}
+    </div>
+    <div class="form-actions">
+      <button class="btn" type="submit">Classify ticket</button>
+      <a class="btn ghost" href="/classify">Clear form</a>
+    </div>
+  </form>
+</section>
+
+{% if result %}
+{% set dc = 'dept-review' if result.needs_review else 'dept-' ~ (result.top_department|lower) %}
+<section class="card result {{ dc }}" id="result" aria-labelledby="result-title">
+  <div class="card-head"><h2 id="result-title">Classification result</h2></div>
+
+  <div class="result-top">
+    <div>
+      <div class="small">{% if result.needs_review %}Result{% else %}Predicted department{% endif %}</div>
+      <div class="dept-name">{{ result.department }}</div>
+    </div>
+    <div class="ring" style="--pct: {{ result.confidence_pct }}" role="img" aria-label="Confidence {{ result.confidence_pct }} percent">
+      <span>{{ result.confidence_pct }}%</span>
+    </div>
+    <div>
+      <div class="small">Confidence</div>
+      <div style="font-weight: 600;">{{ result.confidence_pct }}% {% if result.needs_review %}(below {{ threshold_pct }}%){% else %}(at least {{ threshold_pct }}%){% endif %}</div>
+    </div>
+  </div>
+
+  <div class="badges">
+    {% if result.is_urgent %}
+    <span class="badge urgent">
+      <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1.5l7 12.5H1L8 1.5zm-.75 4.5v3.5h1.5V6h-1.5zm0 4.7v1.5h1.5v-1.5h-1.5z"/></svg>
+      Priority: Urgent
+    </span>
+    {% else %}
+    <span class="badge normal">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5l3.2 3L13 4.5"/></svg>
+      Priority: Normal
+    </span>
+    {% endif %}
+    <span class="badge {{ 'review' if result.needs_review else 'auto' }}">Status: {{ result.status }}</span>
+  </div>
+
+  {% if result.needs_review %}
+  <div class="review-banner" role="alert">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M12 7.5v5M12 16v.1"/></svg>
+    <div>
+      <strong>Human review needed.</strong>
+      The model's best guess was {{ result.top_department }} at {{ result.confidence_pct }}%, which is under the {{ threshold_pct }}% limit. Please route this ticket by hand.
+    </div>
+  </div>
+  {% endif %}
+
+  {% if result.is_urgent %}
+  <p style="color: var(--ink-soft);">Urgent because the ticket contains:
+    {% for k in result.matched_keywords %}<strong>"{{ k }}"</strong>{% if not loop.last %}, {% endif %}{% endfor %}.</p>
+  {% endif %}
+
+  <hr class="divider">
+  <h3 style="margin-bottom: 8px;">Confidence for each department</h3>
+  {% for p in result.probabilities %}
+  <div class="conf-row dept-{{ p.department|lower }} {{ 'top' if p.top }}" style="--threshold: {{ threshold_pct }}%">
+    <span class="name"><span class="dot"></span>{{ p.department }}</span>
+    <div class="conf-bar" role="img" aria-label="{{ p.department }} {{ p.pct }} percent"><span style="width: {{ p.pct }}%"></span></div>
+    <span class="figure">{{ p.pct }}%</span>
+  </div>
+  {% endfor %}
+  <div class="threshold-note"><i></i> {{ threshold_pct }}% line. The top department must reach it to be assigned automatically.</div>
+</section>
+{% endif %}
+{% endblock %}

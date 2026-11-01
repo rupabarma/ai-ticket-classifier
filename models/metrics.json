@@ -1,0 +1,98 @@
+{
+  "trained_at": "2026-11-01 17:15",
+  "sklearn_version": "1.9.1",
+  "dataset_rows": 1800,
+  "train_size": 1440,
+  "test_size": 360,
+  "vocabulary_size": 7599,
+  "model_params": {
+    "algorithm": "LogisticRegression",
+    "C": 10.0,
+    "max_iter": 1000,
+    "ngram_range": [
+      1,
+      2
+    ],
+    "stop_words": "english",
+    "test_fraction": 0.2,
+    "random_state": 42
+  },
+  "accuracy": 0.9638888888888889,
+  "macro": {
+    "precision": 0.9639775012619239,
+    "recall": 0.9645725108225108,
+    "f1": 0.9638951451127531
+  },
+  "weighted": {
+    "precision": 0.9646981267509258,
+    "recall": 0.9638888888888889,
+    "f1": 0.9639025004504801
+  },
+  "per_class": {
+    "Billing": {
+      "precision": 0.9347826086956522,
+      "recall": 0.9772727272727273,
+      "f1-score": 0.9555555555555556,
+      "support": 88
+    },
+    "General": {
+      "precision": 0.975609756097561,
+      "recall": 0.9523809523809523,
+      "f1-score": 0.963855421686747,
+      "support": 84
+    },
+    "HR": {
+      "precision": 0.9560439560439561,
+      "recall": 0.9886363636363636,
+      "f1-score": 0.9720670391061452,
+      "support": 88
+    },
+    "Technical": {
+      "precision": 0.9894736842105263,
+      "recall": 0.94,
+      "f1-score": 0.9641025641025641,
+      "support": 100
+    }
+  },
+  "classes": [
+    "Billing",
+    "General",
+    "HR",
+    "Technical"
+  ],
+  "confusion_matrix": [
+    [
+      86,
+      1,
+      1,
+      0
+    ],
+    [
+      1,
+      80,
+      2,
+      1
+    ],
+    [
+      1,
+      0,
+      87,
+      0
+    ],
+    [
+      4,
+      1,
+      1,
+      94
+    ]
+  ],
+  "classification_report": "              precision    recall  f1-score   support\n\n     Billing      0.935     0.977     0.956        88\n     General      0.976     0.952     0.964        84\n          HR      0.956     0.989     0.972        88\n   Technical      0.989     0.940     0.964       100\n\n    accuracy                          0.964       360\n   macro avg      0.964     0.965     0.964       360\nweighted avg      0.965     0.964     0.964       360\n",
+  "confidence_threshold": 0.6,
+  "threshold_check": {
+    "auto_classified": 349,
+    "needs_review": 11,
+    "accuracy_on_auto_classified": 0.9885386819484241,
+    "accuracy_on_needs_review": 0.18181818181818182,
+    "mean_confidence": 0.9237945148122075
+  }
+}

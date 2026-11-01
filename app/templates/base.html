@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}TicketFlow{% endblock %} | TicketFlow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <a class="brand" href="/" aria-label="TicketFlow home">
+      <svg class="brand-mark" viewBox="0 0 34 34" aria-hidden="true">
+        <rect width="34" height="34" rx="9" fill="#2d4beb"/>
+        <path d="M8 11h18M8 17h11M8 23h6" stroke="#fff" stroke-width="2.6" stroke-linecap="round" fill="none"/>
+        <circle cx="25" cy="22" r="3.6" fill="#ffc94d"/>
+      </svg>
+      <span class="brand-name">TicketFlow</span>
+    </a>
+    <nav class="nav" aria-label="Main">
+      <a href="/" {% if active == 'dashboard' %}aria-current="page"{% endif %}>
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="2.5" y="2.5" width="6" height="8" rx="1.5"/><rect x="11.5" y="2.5" width="6" height="5" rx="1.5"/><rect x="2.5" y="13" width="6" height="4.5" rx="1.5"/><rect x="11.5" y="10" width="6" height="7.5" rx="1.5"/></svg>
+        Dashboard
+      </a>
+      <a href="/classify" {% if active == 'classify' %}aria-current="page"{% endif %}>
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5.5h14M3 10h8M3 14.5h5"/><path d="M14 13l1.7 1.7L19 11.4"/></svg>
+        Classify ticket
+      </a>
+      <a href="/metrics" {% if active == 'metrics' %}aria-current="page"{% endif %}>
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3.5 16.5v-5M8.5 16.5V4M13.5 16.5V8.5M18 16.5H2"/></svg>
+        Model performance
+      </a>
+      <a href="/about" {% if active == 'about' %}aria-current="page"{% endif %}>
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="10" cy="10" r="7.5"/><path d="M10 9v5M10 6.2v.1"/></svg>
+        About
+      </a>
+    </nav>
+    <div class="sidebar-foot">
+      <a href="/docs">API documentation</a>
+    </div>
+  </aside>
+  <main class="main">
+    {% block content %}{% endblock %}
+  </main>
+</div>
+</body>
+</html>
