@@ -131,3 +131,10 @@ Tested in the build environment:
 - All four pages and the classify POST route, with real templates and real service logic: example tickets for every department, urgent and normal priority, the low-confidence review path, validation of empty/blank/too-long fields, and HTML escaping. Pages were also rendered in a real browser engine and checked visually at desktop and mobile widths.
 
 **Not tested in the build environment:** the live FastAPI/Uvicorn server. FastAPI could not be installed there (no network access), so `app/main.py` was exercised through a stand-in that mimics FastAPI's interface rather than the real framework. `tests/smoke_test.py` is included to check the real app end to end on your machine; run it after installing the requirements. `GET /docs` is provided by FastAPI itself and was not exercised.
+
+## Author
+
+**Rupa Barma**
+
+- GitHub: https://github.com/rupabarma
+- Live Demo: [ai-ticket-classifier](https://ai-ticket-classifier-qeef.onrender.com).
